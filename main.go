@@ -46,11 +46,12 @@ func main() {
 		errs <- fmt.Errorf("%s", <-c)
 	}()
 
-	endpoints := authentication.InitEndpoints(service, googleOauthCfg, cfg.OauthStateString)
+	clientHandler := authentication.InitHandler(googleOauthCfg, cfg.OauthStateString)
+	endpoints := authentication.InitEndpoints(service)
 
 	go func() {
 		fmt.Println("listening on port:", cfg.Port)
-		server := authentication.NewHTTPServer(ctx, endpoints)
+		server := authentication.NewHTTPServer(ctx, endpoints, clientHandler)
 		errs <- http.ListenAndServe(fmt.Sprintf(":%s", cfg.Port), server)
 	}()
 

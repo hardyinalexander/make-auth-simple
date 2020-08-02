@@ -8,14 +8,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func NewHTTPServer(ctx context.Context, endpoints Endpoints) http.Handler {
+func NewHTTPServer(ctx context.Context, e Endpoints, h Handler) http.Handler {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/", endpoints.MainPageHandler).Methods("GET")
-	r.HandleFunc("/login", endpoints.LoginPageHandler).Methods("GET")
+	r.HandleFunc("/", h.MainPageHandler).Methods("GET")
+	r.HandleFunc("/login", h.LoginPageHandler).Methods("GET")
 
 	r.Methods("GET").Path("/callback").Handler(CommonMiddleware(httptransport.NewServer(
-		endpoints.MakeLoginEndpoint(),
+		e.LoginEndpoint(),
 		decodeLoginRequest,
 		encodeResponse,
 	)))
